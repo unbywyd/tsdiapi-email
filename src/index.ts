@@ -43,6 +43,7 @@ class App implements AppPlugin {
         if (fs.existsSync(fp)) {
             return fp;
         }
+        this.context?.logger?.warn(`Template file for email not found at ${ph}`);
         return null;
     }
     async onInit(ctx: AppContext) {

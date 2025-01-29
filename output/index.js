@@ -31,6 +31,7 @@ class App {
         if (fs_1.default.existsSync(fp)) {
             return fp;
         }
+        this.context?.logger?.warn(`Template file for email not found at ${ph}`);
         return null;
     }
     async onInit(ctx) {
