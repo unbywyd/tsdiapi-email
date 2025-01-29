@@ -76,9 +76,9 @@ class App implements AppPlugin {
 
         if (this.config.handlebarsTemplatePath) {
             this.config.handlebarsTemplatePath = this.findTemplate(this.config.handlebarsTemplatePath);
-            if (!this.config.handlebarsTemplatePath) {
-                this.config.handlebarsTemplatePath = this.findTemplate("src/templates/email.hbs", true);
-            }
+        }
+        if (!this.config.handlebarsTemplatePath) {
+            this.config.handlebarsTemplatePath = this.findTemplate("src/templates/email.hbs", true);
         }
         this.provider = await createEmailProvider(this.config, this.context.logger);
         SendEmail = this.provider.sendEmail.bind(this.provider);

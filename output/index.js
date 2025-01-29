@@ -62,9 +62,9 @@ class App {
         }
         if (this.config.handlebarsTemplatePath) {
             this.config.handlebarsTemplatePath = this.findTemplate(this.config.handlebarsTemplatePath);
-            if (!this.config.handlebarsTemplatePath) {
-                this.config.handlebarsTemplatePath = this.findTemplate("src/templates/email.hbs", true);
-            }
+        }
+        if (!this.config.handlebarsTemplatePath) {
+            this.config.handlebarsTemplatePath = this.findTemplate("src/templates/email.hbs", true);
         }
         this.provider = await (0, providers_1.createEmailProvider)(this.config, this.context.logger);
         exports.SendEmail = SendEmail = this.provider.sendEmail.bind(this.provider);
