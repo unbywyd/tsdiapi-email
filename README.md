@@ -64,7 +64,7 @@ Use **handlebars templates** for email content:
 ```typescript
 createPlugin({
   handlebarsTemplatePath: "src/templates/email.hbs", // Default: src/templates/email.hbs
-  additionalTemplateData: { company: "My Company" },
+  additionalTemplateData: { company: "My Company" }, // Can be a async function too
 });
 ```
 
