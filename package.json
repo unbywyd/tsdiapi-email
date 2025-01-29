@@ -1,0 +1,57 @@
+{
+  "name": "tsdiapi-email",
+  "description": "Email plugin for TSDIAPI-Server providing a simple and extensible way to send emails.",
+  "version": "1.0.0",
+  "main": "output/index.js",
+  "types": "output/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": {
+    "name": "Artyom Gorlovetskiy",
+    "url": "https://github.com/unbywyd",
+    "email": "unbywyd@gmail.com"
+  },
+  "engines": {
+    "node": ">=18.19.0"
+  },
+  "keywords": [
+    "tsdiapi",
+    "email",
+    "smtp",
+    "nodemailer",
+    "plugin"
+  ],
+  "optionalDependencies": {
+    "@sendgrid/mail": "^8.1.4",
+    "nodemailer": "^6.10.0"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.10.10",
+    "tsdiapi-server": "github:unbywyd/tsdiapi-server#master",
+    "typescript": "^5.7.2"
+  },
+  "peerDependencies": {
+    "reflect-metadata": "^0.1.13",
+    "typedi": "^0.10.0",
+    "winston": "^3.17.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unbywyd/tsdiapi-email.git"
+  },
+  "bugs": {
+    "url": "https://github.com/unbywyd/tsdiapi-email/issues"
+  },
+  "homepage": "https://github.com/unbywyd/tsdiapi-email#readme",
+  "files": [
+    "output/",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@types/nodemailer": "^6.4.17",
+    "handlebars": "^4.7.8"
+  }
+}
