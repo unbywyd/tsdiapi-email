@@ -63,7 +63,7 @@ Use **handlebars templates** for email content:
 
 ```typescript
 createPlugin({
-  handlebarsTemplatePath: "emails/welcome.hbs",
+  handlebarsTemplatePath: "src/templates/email.hbs", // Default: src/templates/email.hbs
   additionalTemplateData: { company: "My Company" },
 });
 ```
@@ -76,7 +76,7 @@ The `context` function allows you to modify the email context before sending:
 import createPlugin, { EmailUserContext } from "tsdiapi-email";
 
 createPlugin({
-  handlebarsTemplatePath: "emails/welcome.hbs",
+  handlebarsTemplatePath: "src/templates/email.hbs",
   context: async (ctx: EmailUserContext<any>) => {
     ctx?.payload = { company: "My Company" }
     return ctx

@@ -24,7 +24,7 @@ declare class App implements AppPlugin {
     context: AppContext;
     provider: EmailProvider;
     constructor(config?: PluginOptions);
-    findTemplate(ph: string): string;
+    findTemplate(ph: string, silent?: boolean): string;
     onInit(ctx: AppContext): Promise<void>;
 }
 export default function createPlugin(config?: PluginOptions): App;

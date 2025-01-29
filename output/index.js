@@ -19,7 +19,7 @@ class App {
     constructor(config) {
         this.config = { ...config };
     }
-    findTemplate(ph) {
+    findTemplate(ph, silent) {
         const projectDir = this.context.appDir;
         if (fs_1.default.existsSync(ph)) {
             return ph;
@@ -31,7 +31,9 @@ class App {
         if (fs_1.default.existsSync(fp)) {
             return fp;
         }
-        this.context?.logger?.warn(`Template file for email not found at ${ph}`);
+        if (!silent) {
+            this.context?.logger?.warn(`Template file for email not found at ${ph}`);
+        }
         return null;
     }
     async onInit(ctx) {
@@ -60,6 +62,9 @@ class App {
         }
         if (this.config.handlebarsTemplatePath) {
             this.config.handlebarsTemplatePath = this.findTemplate(this.config.handlebarsTemplatePath);
+            if (!this.config.handlebarsTemplatePath) {
+                this.config.handlebarsTemplatePath = this.findTemplate("src/templates/email.hbs", true);
+            }
         }
         this.provider = await (0, providers_1.createEmailProvider)(this.config, this.context.logger);
         exports.SendEmail = SendEmail = this.provider.sendEmail.bind(this.provider);

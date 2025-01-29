@@ -31,7 +31,7 @@ class App implements AppPlugin {
     constructor(config?: PluginOptions) {
         this.config = { ...config };
     }
-    findTemplate(ph: string) {
+    findTemplate(ph: string, silent?: boolean) {
         const projectDir = this.context.appDir;
         if (fs.existsSync(ph)) {
             return ph;
@@ -43,7 +43,9 @@ class App implements AppPlugin {
         if (fs.existsSync(fp)) {
             return fp;
         }
-        this.context?.logger?.warn(`Template file for email not found at ${ph}`);
+        if (!silent) {
+            this.context?.logger?.warn(`Template file for email not found at ${ph}`);
+        }
         return null;
     }
     async onInit(ctx: AppContext) {
@@ -74,6 +76,9 @@ class App implements AppPlugin {
 
         if (this.config.handlebarsTemplatePath) {
             this.config.handlebarsTemplatePath = this.findTemplate(this.config.handlebarsTemplatePath);
+            if (!this.config.handlebarsTemplatePath) {
+                this.config.handlebarsTemplatePath = this.findTemplate("src/templates/email.hbs", true);
+            }
         }
         this.provider = await createEmailProvider(this.config, this.context.logger);
         SendEmail = this.provider.sendEmail.bind(this.provider);
