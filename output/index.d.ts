@@ -10,8 +10,8 @@ export type EmailUserContext<T extends Record<any, any>> = {
     payload: T;
 };
 export type PluginOptions = {
-    provider: 'sendgrid' | 'nodemailer';
-    senderEmail: string;
+    provider?: 'sendgrid' | 'nodemailer';
+    senderEmail?: string;
     sendgridApiKey?: string;
     smtp?: SMTPTransport.Options;
     handlebarsTemplatePath?: string;
