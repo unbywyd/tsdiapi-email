@@ -4,7 +4,7 @@ import { AppContext, AppPlugin } from "tsdiapi-server";
 import { createEmailProvider, EmailProvider } from "./providers";
 import fs from "fs";
 import path from "path";
-let SendEmail = () => { };
+let SendEmail: EmailProvider["sendEmail"] = async () => { throw new Error("Email provider not initialized") };
 
 export type EmailUserContext<T extends Record<any, any>> = {
     subject: string,

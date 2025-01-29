@@ -9,7 +9,7 @@ require("reflect-metadata");
 const providers_1 = require("./providers");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-let SendEmail = () => { };
+let SendEmail = async () => { throw new Error("Email provider not initialized"); };
 exports.SendEmail = SendEmail;
 class App {
     name = 'tsdiapi-email';
