@@ -19,7 +19,7 @@ export type PluginOptions = {
     sendgridApiKey?: string,
     smtp?: SMTPTransport.Options,
     handlebarsTemplatePath?: string,
-    additionalTemplateData?: Record<any, any>,
+    additionalTemplateData?: Record<any, any> | ((ctx: EmailUserContext<any>) => Record<any, any> | Promise<Record<any, any>>),
     context?: <T>(ctx: EmailUserContext<T>) => Promise<EmailUserContext<T>> | EmailUserContext<T>
 }
 

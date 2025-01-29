@@ -42,12 +42,13 @@ const handlebars_1 = __importDefault(require("handlebars"));
 const fs_1 = __importDefault(require("fs"));
 const loadNodemailer = () => Promise.resolve().then(() => __importStar(require("nodemailer")));
 const loadSendgrid = () => Promise.resolve().then(() => __importStar(require("@sendgrid/mail")));
-const buildTemplate = (path, meta, additionalTemplateData) => {
+const buildTemplate = async (path, meta, additionalTemplateData) => {
     const content = fs_1.default.readFileSync(path, "utf-8");
     const template = handlebars_1.default.compile(content);
+    const metaData = additionalTemplateData instanceof Function ? await additionalTemplateData(meta) : (additionalTemplateData || {});
     const finalHtml = template({
         ...meta,
-        ...additionalTemplateData,
+        ...metaData,
         content: meta.html,
     });
     return `<html><head><style type="text/css">
@@ -94,7 +95,7 @@ class SendgridProvider {
                 }
             }
             if (this.config.handlebarsTemplatePath) {
-                _html = buildTemplate(this.config.handlebarsTemplatePath, ctx, this.config.additionalTemplateData || {});
+                _html = await buildTemplate(this.config.handlebarsTemplatePath, ctx, this.config.additionalTemplateData || {});
             }
             await this.sgMail.send({ from: this.config.senderEmail, to, subject, html: _html });
             this.logger.info(`Email with subject "${subject}" sent to ${to}`);
@@ -148,7 +149,7 @@ class NodemailerProvider {
                 }
             }
             if (this.config.handlebarsTemplatePath) {
-                _html = buildTemplate(this.config.handlebarsTemplatePath, ctx, this.config.additionalTemplateData || {});
+                _html = await buildTemplate(this.config.handlebarsTemplatePath, ctx, this.config.additionalTemplateData || {});
             }
             await this.transporter.sendMail({ from: this.config.senderEmail || this.config.smtp?.auth?.user, to, subject, html: _html });
             this.logger.info(`Email with subject "${subject}" sent to ${to}`);

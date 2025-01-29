@@ -12,12 +12,15 @@ export interface EmailProvider {
     sendEmail(to: string | Array<string>, subject: string, html?: string, payload?: Record<any, any>): Promise<void>;
 }
 
-const buildTemplate = (path: string, meta: EmailUserContext<any>, additionalTemplateData: any) => {
+const buildTemplate = async (path: string, meta: EmailUserContext<any>, additionalTemplateData: Record<any, any> | ((ctx: EmailUserContext<any>) => Record<any, any> | Promise<Record<any, any>>)) => {
     const content = fs.readFileSync(path, "utf-8");
     const template = handlebars.compile(content);
+
+    const metaData = additionalTemplateData instanceof Function ? await additionalTemplateData(meta) : (additionalTemplateData || {});
+
     const finalHtml = template({
         ...meta,
-        ...additionalTemplateData,
+        ...metaData,
         content: meta.html,
     });
     return `<html><head><style type="text/css">
@@ -64,7 +67,7 @@ export class SendgridProvider implements EmailProvider {
                 }
             }
             if (this.config.handlebarsTemplatePath) {
-                _html = buildTemplate(this.config.handlebarsTemplatePath, ctx, this.config.additionalTemplateData || {});
+                _html = await buildTemplate(this.config.handlebarsTemplatePath, ctx, this.config.additionalTemplateData || {});
             }
 
             await this.sgMail.send({ from: this.config.senderEmail, to, subject, html: _html });
@@ -114,7 +117,7 @@ export class NodemailerProvider implements EmailProvider {
                 }
             }
             if (this.config.handlebarsTemplatePath) {
-                _html = buildTemplate(this.config.handlebarsTemplatePath, ctx, this.config.additionalTemplateData || {});
+                _html = await buildTemplate(this.config.handlebarsTemplatePath, ctx, this.config.additionalTemplateData || {});
             }
             await this.transporter.sendMail({ from: this.config.senderEmail || this.config.smtp?.auth?.user, to, subject, html: _html });
             this.logger.info(`Email with subject "${subject}" sent to ${to}`);
