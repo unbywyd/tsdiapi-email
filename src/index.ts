@@ -1,6 +1,6 @@
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import "reflect-metadata";
-import { AppContext, AppPlugin } from "tsdiapi-server";
+import type { AppContext, AppPlugin } from "@tsdiapi/server";
 import { createEmailProvider, EmailProvider } from "./providers";
 import fs from "fs";
 import path from "path";

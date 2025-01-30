@@ -1,6 +1,6 @@
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import "reflect-metadata";
-import { AppContext, AppPlugin } from "tsdiapi-server";
+import type { AppContext, AppPlugin } from "@tsdiapi/server";
 import { EmailProvider } from "./providers";
 declare let SendEmail: EmailProvider["sendEmail"];
 export type EmailUserContext<T extends Record<any, any>> = {

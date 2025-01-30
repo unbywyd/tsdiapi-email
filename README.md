@@ -1,22 +1,32 @@
-# TSDIAPI Email Plugin
+# @tsdiapi/email: Email Plugin for TSDIAPI-Server
 
-The `tsdiapi-email` plugin provides an easy way to integrate email sending functionality into your **TSDIAPI-Server** applications. It supports **Nodemailer** and **SendGrid**, allowing flexibility in choosing an email provider.
+The **@tsdiapi/email** plugin enables easy integration of email functionality into **TSDIAPI-Server** applications. It supports both **Nodemailer** and **SendGrid**, giving you the flexibility to choose your preferred provider.
+
+---
 
 ## Installation
 
 ```sh
-npm install tsdiapi-email
+npm install @tsdiapi/email
 ```
+
+Or add the plugin via the CLI:
+
+```sh
+tsdiapi add plugin email
+```
+
+---
 
 ## Usage
 
 ### Register the Plugin
 
-Add the plugin to your `TSDIAPI-Server` setup:
+Include the plugin in your server setup:
 
 ```typescript
-import createPlugin from "tsdiapi-email";
-import { createApp } from "tsdiapi-server";
+import createPlugin from "@tsdiapi/email";
+import { createApp } from "@tsdiapi/server";
 
 createApp({
   plugins: [
@@ -34,14 +44,14 @@ createApp({
 });
 ```
 
-Alternatively, configure via **ENV**:
+Alternatively, configure it through **ENV**:
 
 ```env
 EMAIL_PROVIDER=sendgrid
 SENDGRID_API_KEY=your-sendgrid-api-key
 SENDER_EMAIL=no-reply@example.com
 
-# or for SMTP (Nodemailer)
+# For SMTP (Nodemailer)
 EMAIL_PROVIDER=nodemailer
 SMTP_HOST=smtp.example.com
 SMTP_PORT=587
@@ -49,41 +59,69 @@ SMTP_USER=your-smtp-user
 SMTP_PASS=your-smtp-pass
 ```
 
+---
+
 ## Sending Emails
 
-```typescript
-import { SendEmail } from "tsdiapi-email";
+Use the `SendEmail` function to send emails:
 
-await SendEmail("user@example.com", "Welcome!", "<h1>Hello</h1>");
+```typescript
+import { SendEmail } from "@tsdiapi/email";
+
+await SendEmail("user@example.com", "Welcome!", "<h1>Hello!</h1>");
+
+// Send with handlebars payload
+await SendEmail("user@example.com", "Welcome!", "<h1>Hello!</h1>", { name: "John" });
 ```
+
+---
 
 ## Handlebars Templating Support
 
-Use **handlebars templates** for email content:
+Easily define reusable email templates using **Handlebars**:
 
 ```typescript
 createPlugin({
-  handlebarsTemplatePath: "src/templates/email.hbs", // Default: src/templates/email.hbs
-  additionalTemplateData: { company: "My Company" }, // Can be a async function too
+  handlebarsTemplatePath: "src/templates/email.hbs", // Path to the template file
+  additionalTemplateData: { company: "My Company" },  // Static or dynamic data
 });
 ```
 
-## Using context function
+In the template file (`email.hbs`), you can use placeholders like:
 
-The `context` function allows you to modify the email context before sending:
+```hbs
+<h1>Welcome, {{payload.name}}</h1>
+<p>Thank you for joining {{company}}.</p>
+```
+
+---
+
+## Context Customization
+
+Modify the email context dynamically with the `context` function:
 
 ```typescript
-import createPlugin, { EmailUserContext } from "tsdiapi-email";
+import createPlugin, { EmailUserContext } from "@tsdiapi/email";
 
 createPlugin({
-  handlebarsTemplatePath: "src/templates/email.hbs",
   context: async (ctx: EmailUserContext<any>) => {
-    ctx?.payload = { company: "My Company" }
-    return ctx
+    ctx.payload.company = "My Dynamic Company";
+    return ctx;
   },
 });
 ```
 
+---
+
+## Features
+
+- **Multiple Providers**: Switch between SendGrid and Nodemailer easily.
+- **Environment Configuration**: Use `.env` variables for better control.
+- **Templating**: Dynamic email content through **Handlebars** templates.
+- **Type-Safe**: Strongly-typed options and payloads.
+
+---
+
 ## License
 
-MIT
+This library is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
