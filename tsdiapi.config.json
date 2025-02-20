@@ -1,0 +1,109 @@
+{
+  "name": "@tsdiapi/email",
+  "description": "A TSDIAPI plugin for sending emails using SendGrid or SMTP via Nodemailer.",
+  "variables": [
+    {
+      "key": "EMAIL_PROVIDER",
+      "type": "string",
+      "default": "sendgrid",
+      "configurable": true,
+      "description": "Email provider (SendGrid or Nodemailer)",
+      "inquirer": {
+        "type": "list",
+        "message": "Select your email provider:",
+        "choices": [
+          "sendgrid",
+          "nodemailer"
+        ]
+      }
+    },
+    {
+      "key": "SENDGRID_API_KEY",
+      "type": "string",
+      "default": "",
+      "configurable": true,
+      "description": "SendGrid API Key",
+      "inquirer": {
+        "message": "Enter your SendGrid API key:",
+        "required": true
+      },
+      "validate": {
+        "type": "string",
+        "minLength": 32,
+        "errorMessage": "SendGrid API key must be at least 32 characters long."
+      },
+      "when": "EMAIL_PROVIDER === 'sendgrid'"
+    },
+    {
+      "key": "SENDER_EMAIL",
+      "type": "string",
+      "default": "",
+      "configurable": true,
+      "description": "Sender email address",
+      "inquirer": {
+        "message": "Enter your sender email address:",
+        "required": true
+      },
+      "validate": {
+        "type": "string",
+        "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+        "errorMessage": "Enter a valid email address."
+      }
+    },
+    {
+      "key": "SMTP_HOST",
+      "type": "string",
+      "default": "",
+      "configurable": true,
+      "description": "SMTP server host",
+      "inquirer": {
+        "message": "Enter your SMTP host (e.g., smtp.example.com):",
+        "required": true
+      },
+      "when": "EMAIL_PROVIDER === 'nodemailer'"
+    },
+    {
+      "key": "SMTP_PORT",
+      "type": "number",
+      "default": 587,
+      "configurable": true,
+      "description": "SMTP port",
+      "inquirer": {
+        "message": "Enter your SMTP port (default 587):",
+        "default": 587
+      },
+      "validate": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 65535,
+        "errorMessage": "Enter a valid port number (1-65535)."
+      },
+      "when": "EMAIL_PROVIDER === 'nodemailer'"
+    },
+    {
+      "key": "SMTP_USER",
+      "type": "string",
+      "default": "",
+      "configurable": true,
+      "description": "SMTP username",
+      "inquirer": {
+        "message": "Enter your SMTP username:",
+        "required": true
+      },
+      "when": "EMAIL_PROVIDER === 'nodemailer'"
+    },
+    {
+      "key": "SMTP_PASS",
+      "type": "string",
+      "default": "",
+      "configurable": true,
+      "description": "SMTP password",
+      "inquirer": {
+        "message": "Enter your SMTP password:",
+        "required": true,
+        "mask": "*"
+      },
+      "when": "EMAIL_PROVIDER === 'nodemailer'"
+    }
+  ]
+}

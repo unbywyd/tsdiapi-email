@@ -13,7 +13,7 @@ npm install @tsdiapi/email
 Or add the plugin via the CLI:
 
 ```sh
-tsdiapi add plugin email
+tsdiapi plugins add email
 ```
 
 ---
