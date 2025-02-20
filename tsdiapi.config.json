@@ -32,7 +32,7 @@
         "minLength": 32,
         "errorMessage": "SendGrid API key must be at least 32 characters long."
       },
-      "when": "EMAIL_PROVIDER === 'sendgrid'"
+      "when": "EMAIL_PROVIDER == 'sendgrid'"
     },
     {
       "key": "SENDER_EMAIL",
@@ -60,7 +60,7 @@
         "message": "Enter your SMTP host (e.g., smtp.example.com):",
         "required": true
       },
-      "when": "EMAIL_PROVIDER === 'nodemailer'"
+      "when": "EMAIL_PROVIDER == 'nodemailer'"
     },
     {
       "key": "SMTP_PORT",
@@ -78,7 +78,7 @@
         "maximum": 65535,
         "errorMessage": "Enter a valid port number (1-65535)."
       },
-      "when": "EMAIL_PROVIDER === 'nodemailer'"
+      "when": "EMAIL_PROVIDER == 'nodemailer'"
     },
     {
       "key": "SMTP_USER",
@@ -90,7 +90,7 @@
         "message": "Enter your SMTP username:",
         "required": true
       },
-      "when": "EMAIL_PROVIDER === 'nodemailer'"
+      "when": "EMAIL_PROVIDER == 'nodemailer'"
     },
     {
       "key": "SMTP_PASS",
@@ -103,7 +103,7 @@
         "required": true,
         "mask": "*"
       },
-      "when": "EMAIL_PROVIDER === 'nodemailer'"
+      "when": "EMAIL_PROVIDER == 'nodemailer'"
     }
   ]
 }
