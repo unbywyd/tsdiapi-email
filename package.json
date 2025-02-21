@@ -1,7 +1,7 @@
 {
   "name": "@tsdiapi/email",
   "description": "Email plugin for TSDIAPI-Server providing a simple and extensible way to send emails.",
-  "version": "0.0.1-alpha.6",
+  "version": "0.0.1-alpha.8",
   "main": "output/index.js",
   "types": "output/index.d.ts",
   "private": false,
@@ -53,7 +53,8 @@
     "output/",
     "README.md",
     "LICENSE.md",
-    "tsdiapi.config.json"
+    "tsdiapi.config.json",
+    "files/"
   ],
   "dependencies": {
     "@types/nodemailer": "^6.4.17",

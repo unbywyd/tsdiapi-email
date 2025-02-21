@@ -3,7 +3,7 @@
   "description": "A TSDIAPI plugin for sending emails using SendGrid or SMTP via Nodemailer.",
   "variables": [
     {
-      "key": "EMAIL_PROVIDER",
+      "name": "EMAIL_PROVIDER",
       "type": "string",
       "default": "sendgrid",
       "configurable": true,
@@ -18,7 +18,7 @@
       }
     },
     {
-      "key": "SENDGRID_API_KEY",
+      "name": "SENDGRID_API_KEY",
       "type": "string",
       "default": "",
       "configurable": true,
@@ -35,7 +35,7 @@
       "when": "EMAIL_PROVIDER == 'sendgrid'"
     },
     {
-      "key": "SENDER_EMAIL",
+      "name": "SENDER_EMAIL",
       "type": "string",
       "default": "",
       "configurable": true,
@@ -51,7 +51,7 @@
       }
     },
     {
-      "key": "SMTP_HOST",
+      "name": "SMTP_HOST",
       "type": "string",
       "default": "",
       "configurable": true,
@@ -63,7 +63,7 @@
       "when": "EMAIL_PROVIDER == 'nodemailer'"
     },
     {
-      "key": "SMTP_PORT",
+      "name": "SMTP_PORT",
       "type": "number",
       "default": 587,
       "configurable": true,
@@ -81,7 +81,7 @@
       "when": "EMAIL_PROVIDER == 'nodemailer'"
     },
     {
-      "key": "SMTP_USER",
+      "name": "SMTP_USER",
       "type": "string",
       "default": "",
       "configurable": true,
@@ -93,7 +93,7 @@
       "when": "EMAIL_PROVIDER == 'nodemailer'"
     },
     {
-      "key": "SMTP_PASS",
+      "name": "SMTP_PASS",
       "type": "string",
       "default": "",
       "configurable": true,
@@ -104,6 +104,13 @@
         "mask": "*"
       },
       "when": "EMAIL_PROVIDER == 'nodemailer'"
+    }
+  ],
+  "files": [
+    {
+      "source": "files/email.hbs",
+      "destination": "src/templates/email.hbs",
+      "overwrite": false
     }
   ]
 }
