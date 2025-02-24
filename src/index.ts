@@ -1,10 +1,11 @@
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import "reflect-metadata";
 import type { AppContext, AppPlugin } from "@tsdiapi/server";
-import { createEmailProvider, EmailProvider } from "./providers";
+import { createEmailProvider as createProvider, EmailProvider as IEmailProvider } from "./providers";
 import fs from "fs";
 import path from "path";
-let SendEmail: EmailProvider["sendEmail"] = async () => { throw new Error("Email provider not initialized") };
+
+let globalEmailProvider: IEmailProvider | null = null;
 
 export type EmailUserContext<T extends Record<any, any>> = {
     subject: string,
@@ -27,11 +28,14 @@ class App implements AppPlugin {
     name = 'tsdiapi-email';
     config: PluginOptions;
     context: AppContext;
-    provider: EmailProvider;
+    provider: IEmailProvider;
     constructor(config?: PluginOptions) {
         this.config = { ...config };
     }
     findTemplate(ph: string, silent?: boolean) {
+        if (!this.context) {
+            throw new Error("Plugin context is not initialized yet.");
+        }
         const projectDir = this.context.appDir;
         if (fs.existsSync(ph)) {
             return ph;
@@ -49,9 +53,13 @@ class App implements AppPlugin {
         return null;
     }
     async onInit(ctx: AppContext) {
+        if (globalEmailProvider) {
+            ctx.logger.warn("Email plugin is already initialized. Skipping re-initialization.");
+            return;
+        }
         this.context = ctx;
 
-        const appConfig = ctx.config.appConfig;
+        const appConfig = ctx.config.appConfig || {};
         if ("SENDGRID_API_KEY" in appConfig) {
             this.config.sendgridApiKey = appConfig.SENDGRID_API_KEY;
         }
@@ -80,8 +88,12 @@ class App implements AppPlugin {
         if (!this.config.handlebarsTemplatePath) {
             this.config.handlebarsTemplatePath = this.findTemplate("src/templates/email.hbs", true);
         }
-        this.provider = await createEmailProvider(this.config, this.context.logger);
-        SendEmail = this.provider.sendEmail.bind(this.provider);
+        if (this.config.handlebarsTemplatePath) {
+            ctx.logger.info(`Using email template from ${this.config.handlebarsTemplatePath}`);
+        }
+        this.provider = await createProvider(this.config, this.context.logger);
+        globalEmailProvider = this.provider;
+        this.context.logger.info("✅ Email plugin initialized successfully.");
     }
 }
 
@@ -89,4 +101,13 @@ export default function createPlugin(config?: PluginOptions) {
     return new App(config);
 }
 
-export { SendEmail }
+export function getEmailProvider(): IEmailProvider {
+    if (!globalEmailProvider) {
+        throw new Error("❌ Email plugin is not initialized. Use createPlugin() in your server context first.");
+    }
+    return globalEmailProvider;
+}
+
+export { createProvider as createEmailProvider };
+
+export type { IEmailProvider as EmailProvider };

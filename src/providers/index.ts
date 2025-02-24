@@ -33,8 +33,6 @@ const buildTemplate = async (path: string, meta: EmailUserContext<any>, addition
             }</style></head><body>${finalHtml}</body></html>`;
 }
 
-
-
 export class SendgridProvider implements EmailProvider {
     private sgMail: MailService;
 
