@@ -112,5 +112,8 @@
       "destination": "src/templates/email.hbs",
       "overwrite": false
     }
+  ],
+  "postMessages": [
+    "🚀 The @tsdiapi/email plugin has been successfully installed!"
   ]
 }
