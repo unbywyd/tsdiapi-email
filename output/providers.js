@@ -1,23 +1,11 @@
-import type { Transporter } from "nodemailer";
-import type { EmailUserContext, PluginOptions } from "..";
-import type { MailService } from "@sendgrid/mail";
-import type { Logger } from "winston";
 import handlebars from "handlebars";
 import fs from "fs";
 const loadNodemailer = () => import("nodemailer");
 const loadSendgrid = () => import("@sendgrid/mail");
-
-export interface EmailProvider {
-    init(): Promise<void>;
-    sendEmail(to: string | Array<string>, subject: string, html?: string, payload?: Record<any, any>): Promise<void>;
-}
-
-const buildTemplate = async (path: string, meta: EmailUserContext<any>, additionalTemplateData: Record<any, any> | ((ctx: EmailUserContext<any>) => Record<any, any> | Promise<Record<any, any>>)) => {
+const buildTemplate = async (path, meta, additionalTemplateData) => {
     const content = fs.readFileSync(path, "utf-8");
     const template = handlebars.compile(content);
-
     const metaData = additionalTemplateData instanceof Function ? await additionalTemplateData(meta) : (additionalTemplateData || {});
-
     const finalHtml = template({
         ...meta,
         ...metaData,
@@ -31,13 +19,15 @@ const buildTemplate = async (path: string, meta: EmailUserContext<any>, addition
             p, h1, h2, h3, h4, h5, h6 {
                 color: inherit !important;
             }</style></head><body>${finalHtml}</body></html>`;
-}
-
-export class SendgridProvider implements EmailProvider {
-    private sgMail: MailService;
-
-    constructor(private config: PluginOptions, public logger: Logger) { }
-
+};
+export class SendgridProvider {
+    config;
+    logger;
+    sgMail;
+    constructor(config, logger) {
+        this.config = config;
+        this.logger = logger;
+    }
     async checkSendgridConfig() {
         if (!this.config.sendgridApiKey) {
             throw new Error("Sendgrid API key is required for sendgrid provider.");
@@ -49,8 +39,7 @@ export class SendgridProvider implements EmailProvider {
         this.sgMail = sendgrid.default;
         this.sgMail.setApiKey(this.config.sendgridApiKey);
     }
-
-    async sendEmail(to: string | Array<string>, subject: string, html?: string, payload?: Record<any, any>) {
+    async sendEmail(to, subject, html, payload) {
         if (!this.sgMail) {
             throw new Error("Sendgrid is not initialized. Call `init()` first.");
         }
@@ -60,26 +49,30 @@ export class SendgridProvider implements EmailProvider {
             if (this.config.context) {
                 try {
                     ctx = await this.config.context(ctx);
-                } catch (error) {
+                }
+                catch (error) {
                     this.logger.error("Error in context function", error);
                 }
             }
             if (this.config.handlebarsTemplatePath) {
                 _html = await buildTemplate(this.config.handlebarsTemplatePath, ctx, this.config.additionalTemplateData || {});
             }
-
             await this.sgMail.send({ from: this.config.senderEmail, to, subject, html: _html });
             this.logger.info(`Email with subject "${subject}" sent to ${to}`);
-        } catch (error) {
+        }
+        catch (error) {
             this.logger.error("Error sending email", error);
         }
     }
 }
-
-export class NodemailerProvider implements EmailProvider {
-    private transporter: Transporter<any>;
-    constructor(private config: PluginOptions, public logger: Logger) { }
-
+export class NodemailerProvider {
+    config;
+    logger;
+    transporter;
+    constructor(config, logger) {
+        this.config = config;
+        this.logger = logger;
+    }
     async checkSmtpConfig() {
         if (!this.config.smtp) {
             throw new Error("SMTP configuration is required for nodemailer provider.");
@@ -99,8 +92,7 @@ export class NodemailerProvider implements EmailProvider {
         const nodemailer = await loadNodemailer();
         this.transporter = nodemailer.default.createTransport(this.config.smtp);
     }
-
-    async sendEmail(to: string | Array<string>, subject: string, html?: string, payload?: Record<any, any>) {
+    async sendEmail(to, subject, html, payload) {
         if (!this.transporter) {
             throw new Error("Nodemailer is not initialized. Call `init()` first.");
         }
@@ -110,7 +102,8 @@ export class NodemailerProvider implements EmailProvider {
             if (this.config.context) {
                 try {
                     ctx = await this.config.context(ctx);
-                } catch (error) {
+                }
+                catch (error) {
                     this.logger.error("Error in context function", error);
                 }
             }
@@ -119,24 +112,23 @@ export class NodemailerProvider implements EmailProvider {
             }
             await this.transporter.sendMail({ from: this.config.senderEmail || this.config.smtp?.auth?.user, to, subject, html: _html });
             this.logger.info(`Email with subject "${subject}" sent to ${to}`);
-        } catch (error) {
+        }
+        catch (error) {
             this.logger.error("Error sending email", error);
         }
     }
 }
-
-export async function createEmailProvider(config: PluginOptions, logger: Logger): Promise<EmailProvider> {
+export async function createEmailProvider(config, logger) {
     if (config.provider === "nodemailer") {
         const provider = new NodemailerProvider(config, logger);
         await provider.init();
         return provider;
     }
-
     if (config.provider === "sendgrid") {
         const provider = new SendgridProvider(config, logger);
         await provider.init();
         return provider;
     }
-
     throw new Error("Invalid email provider. Choose 'nodemailer' or 'sendgrid'.");
 }
+//# sourceMappingURL=providers.js.map

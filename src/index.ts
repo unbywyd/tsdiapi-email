@@ -1,9 +1,9 @@
-import SMTPTransport from "nodemailer/lib/smtp-transport";
 import "reflect-metadata";
 import type { AppContext, AppPlugin } from "@tsdiapi/server";
-import { createEmailProvider as createProvider, EmailProvider as IEmailProvider } from "./providers";
+import { createEmailProvider as createProvider, EmailProvider as IEmailProvider } from "./providers.js";
 import fs from "fs";
 import path from "path";
+import SMTPTransport from "nodemailer/lib/smtp-transport/index.js";
 
 let globalEmailProvider: IEmailProvider | null = null;
 

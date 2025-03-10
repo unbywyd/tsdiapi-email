@@ -1,16 +1,7 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createEmailProvider = void 0;
-exports.default = createPlugin;
-exports.getEmailProvider = getEmailProvider;
-require("reflect-metadata");
-const providers_1 = require("./providers");
-Object.defineProperty(exports, "createEmailProvider", { enumerable: true, get: function () { return providers_1.createEmailProvider; } });
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
+import "reflect-metadata";
+import { createEmailProvider as createProvider } from "./providers.js";
+import fs from "fs";
+import path from "path";
 let globalEmailProvider = null;
 class App {
     name = 'tsdiapi-email';
@@ -25,14 +16,14 @@ class App {
             throw new Error("Plugin context is not initialized yet.");
         }
         const projectDir = this.context.appDir;
-        if (fs_1.default.existsSync(ph)) {
+        if (fs.existsSync(ph)) {
             return ph;
         }
-        if (fs_1.default.existsSync(`${projectDir}/${ph}`)) {
+        if (fs.existsSync(`${projectDir}/${ph}`)) {
             return `${projectDir}/${ph}`;
         }
-        const fp = path_1.default.join(projectDir, ph);
-        if (fs_1.default.existsSync(fp)) {
+        const fp = path.join(projectDir, ph);
+        if (fs.existsSync(fp)) {
             return fp;
         }
         if (!silent) {
@@ -77,18 +68,19 @@ class App {
         if (this.config.handlebarsTemplatePath) {
             ctx.logger.info(`Using email template from ${this.config.handlebarsTemplatePath}`);
         }
-        this.provider = await (0, providers_1.createEmailProvider)(this.config, this.context.logger);
+        this.provider = await createProvider(this.config, this.context.logger);
         globalEmailProvider = this.provider;
         this.context.logger.info("✅ Email plugin initialized successfully.");
     }
 }
-function createPlugin(config) {
+export default function createPlugin(config) {
     return new App(config);
 }
-function getEmailProvider() {
+export function getEmailProvider() {
     if (!globalEmailProvider) {
         throw new Error("❌ Email plugin is not initialized. Use createPlugin() in your server context first.");
     }
     return globalEmailProvider;
 }
+export { createProvider as createEmailProvider };
 //# sourceMappingURL=index.js.map

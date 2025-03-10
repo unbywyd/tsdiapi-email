@@ -1,7 +1,7 @@
-import SMTPTransport from "nodemailer/lib/smtp-transport";
 import "reflect-metadata";
 import type { AppContext, AppPlugin } from "@tsdiapi/server";
-import { createEmailProvider as createProvider, EmailProvider as IEmailProvider } from "./providers";
+import { createEmailProvider as createProvider, EmailProvider as IEmailProvider } from "./providers.js";
+import SMTPTransport from "nodemailer/lib/smtp-transport/index.js";
 export type EmailUserContext<T extends Record<any, any>> = {
     subject: string;
     to: string | Array<string>;

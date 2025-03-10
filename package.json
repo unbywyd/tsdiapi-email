@@ -1,9 +1,10 @@
 {
   "name": "@tsdiapi/email",
   "description": "Email plugin for TSDIAPI-Server providing a simple and extensible way to send emails.",
-  "version": "0.0.1-alpha.10",
+  "version": "0.1.0",
   "main": "output/index.js",
   "types": "output/index.d.ts",
+  "type": "module",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -23,6 +24,7 @@
     "tsdiapi",
     "email",
     "smtp",
+    "sendgrid",
     "nodemailer",
     "plugin"
   ],
@@ -32,11 +34,12 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@tsdiapi/server": "^0.0.1-alpha",
     "@types/node": "^22.10.10",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "@types/nodemailer": "^6.4.17"
   },
   "peerDependencies": {
+    "@tsdiapi/server": "^0.1.0",
     "reflect-metadata": "^0.2.2",
     "typedi": "^0.10.0",
     "winston": "^3.17.0"
@@ -57,7 +60,6 @@
     "files/"
   ],
   "dependencies": {
-    "@types/nodemailer": "^6.4.17",
     "handlebars": "^4.7.8"
   }
 }
