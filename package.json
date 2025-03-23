@@ -41,8 +41,7 @@
   "peerDependencies": {
     "@tsdiapi/server": "^0.1.0",
     "reflect-metadata": "^0.2.2",
-    "typedi": "^0.10.0",
-    "winston": "^3.17.0"
+    "typedi": "^0.10.0"
   },
   "repository": {
     "type": "git",

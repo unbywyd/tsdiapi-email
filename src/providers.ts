@@ -1,9 +1,9 @@
 import type { Transporter } from "nodemailer";
 import type { EmailUserContext, PluginOptions } from "./index.js";
 import type { MailService } from "@sendgrid/mail";
-import type { Logger } from "winston";
 import handlebars from "handlebars";
 import fs from "fs";
+import { AppContext } from "@tsdiapi/server";
 const loadNodemailer = () => import("nodemailer");
 const loadSendgrid = () => import("@sendgrid/mail");
 
@@ -36,7 +36,7 @@ const buildTemplate = async (path: string, meta: EmailUserContext<any>, addition
 export class SendgridProvider implements EmailProvider {
     private sgMail: MailService;
 
-    constructor(private config: PluginOptions, public logger: Logger) { }
+    constructor(private config: PluginOptions, public logger: AppContext['fastify']['log']) { }
 
     async checkSendgridConfig() {
         if (!this.config.sendgridApiKey) {
@@ -78,7 +78,7 @@ export class SendgridProvider implements EmailProvider {
 
 export class NodemailerProvider implements EmailProvider {
     private transporter: Transporter<any>;
-    constructor(private config: PluginOptions, public logger: Logger) { }
+    constructor(private config: PluginOptions, public logger: AppContext['fastify']['log']) { }
 
     async checkSmtpConfig() {
         if (!this.config.smtp) {
@@ -125,15 +125,15 @@ export class NodemailerProvider implements EmailProvider {
     }
 }
 
-export async function createEmailProvider(config: PluginOptions, logger: Logger): Promise<EmailProvider> {
+export async function createEmailProvider(config: PluginOptions, app: AppContext): Promise<EmailProvider> {
     if (config.provider === "nodemailer") {
-        const provider = new NodemailerProvider(config, logger);
+        const provider = new NodemailerProvider(config, app.fastify.log);
         await provider.init();
         return provider;
     }
 
     if (config.provider === "sendgrid") {
-        const provider = new SendgridProvider(config, logger);
+        const provider = new SendgridProvider(config, app.fastify.log);
         await provider.init();
         return provider;
     }

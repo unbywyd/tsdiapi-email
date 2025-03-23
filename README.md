@@ -70,9 +70,9 @@ The plugin exposes a **global provider**, allowing you to send emails from anywh
 
 ### **Sending Emails via the Global Provider**
 ```typescript
-import { getEmailProvider } from "@tsdiapi/email";
+import { useEmailProvider } from "@tsdiapi/email";
 
-const emailProvider = getEmailProvider();
+const emailProvider = useEmailProvider();
 
 await emailProvider.sendEmail("user@example.com", "Welcome!", "<h1>Hello!</h1>");
 
@@ -80,7 +80,7 @@ await emailProvider.sendEmail("user@example.com", "Welcome!", "<h1>Hello!</h1>")
 await emailProvider.sendEmail("user@example.com", "Welcome!", "<h1>Hello, {{name}}!</h1>", { name: "John" });
 ```
 
-> **Note:** Ensure that `createPlugin()` has been called before accessing `getEmailProvider()`.
+> **Note:** Ensure that `createPlugin()` has been called before accessing `useEmailProvider()`.
 
 ---
 
@@ -156,7 +156,7 @@ createPlugin({
 ## **Features**
 
 ✅ **Supports Multiple Providers** – Easily switch between **SendGrid** and **Nodemailer**.  
-✅ **Global Provider Access** – Get the initialized email provider anywhere with `getEmailProvider()`.  
+✅ **Global Provider Access** – Get the initialized email provider anywhere with `useEmailProvider()`.  
 ✅ **Standalone Usage** – Use it **with or without TSDIAPI**.  
 ✅ **Environment Configuration** – Load settings via `.env` variables.  
 ✅ **Templating with Handlebars** – Create **dynamic email templates**.  
@@ -171,7 +171,7 @@ This library is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 ---
 
 ### **What’s New?**
-- **Global Access with `getEmailProvider()`** – No more manually binding functions.
+- **Global Access with `useEmailProvider()`** – No more manually binding functions.
 - **Dual Usage** – Works inside **TSDIAPI** or as a standalone module.
 - **Better Configuration Handling** – ENV support and **default settings**.
 
