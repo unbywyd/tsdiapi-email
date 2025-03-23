@@ -1,10 +1,7 @@
-import "reflect-metadata";
 import type { AppContext, AppPlugin } from "@tsdiapi/server";
 import { createEmailProvider as createProvider, EmailProvider as IEmailProvider } from "./providers.js";
 import fs from "fs";
 import path from "path";
-import SMTPTransport from "nodemailer/lib/smtp-transport/index.js";
-
 let globalEmailProvider: IEmailProvider | null = null;
 import type { FastifyInstance } from "fastify";
 declare module "fastify" {
@@ -24,7 +21,7 @@ export type PluginOptions = {
     provider?: 'sendgrid' | 'nodemailer',
     senderEmail?: string,
     sendgridApiKey?: string,
-    smtp?: SMTPTransport.Options,
+    smtp?: Record<string, any>,
     handlebarsTemplatePath?: string,
     additionalTemplateData?: Record<any, any> | ((ctx: EmailUserContext<any>) => Record<any, any> | Promise<Record<any, any>>),
     context?: <T>(ctx: EmailUserContext<T>) => Promise<EmailUserContext<T>> | EmailUserContext<T>
@@ -69,15 +66,18 @@ class App implements AppPlugin {
         if (!this.config.smtp) {
             this.config.smtp = {};
         }
-
+        if (!this.config.smtp.auth) {
+            this.config.smtp.auth = {};
+        }
         this.config.sendgridApiKey = config.get("SENDGRID_API_KEY", this.config.sendgridApiKey) as string;
         this.config.senderEmail = config.get("SENDER_EMAIL", this.config.senderEmail) as string;
         this.config.provider = config.get("EMAIL_PROVIDER", this.config.provider) as 'sendgrid' | 'nodemailer';
-        this.config.smtp.host = config.get("SMTP_HOST", this.config.smtp.host) as string;
-        this.config.smtp.port = config.get("SMTP_PORT", this.config.smtp.port) as number;
 
-        const user = config.get("SMTP_USER", this.config.smtp.auth?.user) as string;
-        const pass = config.get("SMTP_PASS", this.config.smtp.auth?.pass) as string;
+        this.config.smtp.host = config.get("SMTP_HOST", this.config?.smtp?.host) as string;
+        this.config.smtp.port = config.get("SMTP_PORT", this.config?.smtp?.port) as number;
+
+        const user = config.get("SMTP_USER", this.config?.smtp?.auth?.user) as string;
+        const pass = config.get("SMTP_PASS", this.config?.smtp?.auth?.pass) as string;
         if (user && pass) {
             this.config.smtp.auth = { user, pass };
         }

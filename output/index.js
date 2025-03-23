@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import { createEmailProvider as createProvider } from "./providers.js";
 import fs from "fs";
 import path from "path";
@@ -27,37 +26,32 @@ class App {
             return fp;
         }
         if (!silent) {
-            this.context?.logger?.warn(`Template file for email not found at ${ph}`);
+            this.context?.fastify.log?.warn(`Template file for email not found at ${ph}`);
         }
         return null;
     }
     async onInit(ctx) {
         if (globalEmailProvider) {
-            ctx.logger.warn("Email plugin is already initialized. Skipping re-initialization.");
+            ctx.fastify.log.warn("Email plugin is already initialized. Skipping re-initialization.");
             return;
         }
         this.context = ctx;
-        const appConfig = ctx.config.appConfig || {};
-        if ("SENDGRID_API_KEY" in appConfig) {
-            this.config.sendgridApiKey = appConfig.SENDGRID_API_KEY;
-        }
+        const config = ctx.projectConfig;
         if (!this.config.smtp) {
             this.config.smtp = {};
         }
-        if ("SMTP_HOST" in appConfig) {
-            this.config.smtp.host = appConfig.SMTP_HOST;
+        if (!this.config.smtp.auth) {
+            this.config.smtp.auth = {};
         }
-        if ("SMTP_PORT" in appConfig) {
-            this.config.smtp.port = appConfig.SMTP_PORT;
-        }
-        if ("SMTP_USER" in appConfig && "SMTP_PASS" in appConfig) {
-            this.config.smtp.auth = { user: appConfig.SMTP_USER, pass: appConfig.SMTP_PASS };
-        }
-        if ("SENDER_EMAIL" in appConfig) {
-            this.config.senderEmail = appConfig.SENDER_EMAIL;
-        }
-        if ("EMAIL_PROVIDER" in appConfig) {
-            this.config.provider = appConfig.EMAIL_PROVIDER;
+        this.config.sendgridApiKey = config.get("SENDGRID_API_KEY", this.config.sendgridApiKey);
+        this.config.senderEmail = config.get("SENDER_EMAIL", this.config.senderEmail);
+        this.config.provider = config.get("EMAIL_PROVIDER", this.config.provider);
+        this.config.smtp.host = config.get("SMTP_HOST", this.config?.smtp?.host);
+        this.config.smtp.port = config.get("SMTP_PORT", this.config?.smtp?.port);
+        const user = config.get("SMTP_USER", this.config?.smtp?.auth?.user);
+        const pass = config.get("SMTP_PASS", this.config?.smtp?.auth?.pass);
+        if (user && pass) {
+            this.config.smtp.auth = { user, pass };
         }
         if (this.config.handlebarsTemplatePath) {
             this.config.handlebarsTemplatePath = this.findTemplate(this.config.handlebarsTemplatePath);
@@ -66,17 +60,17 @@ class App {
             this.config.handlebarsTemplatePath = this.findTemplate("src/templates/email.hbs", true);
         }
         if (this.config.handlebarsTemplatePath) {
-            ctx.logger.info(`Using email template from ${this.config.handlebarsTemplatePath}`);
+            ctx.fastify.log.info(`Using email template from ${this.config.handlebarsTemplatePath}`);
         }
-        this.provider = await createProvider(this.config, this.context.logger);
+        this.provider = await createProvider(this.config, this.context);
         globalEmailProvider = this.provider;
-        this.context.logger.info("✅ Email plugin initialized successfully.");
+        ctx.fastify.decorate("email", this.provider);
     }
 }
 export default function createPlugin(config) {
     return new App(config);
 }
-export function getEmailProvider() {
+export function useEmailProvider() {
     if (!globalEmailProvider) {
         throw new Error("❌ Email plugin is not initialized. Use createPlugin() in your server context first.");
     }

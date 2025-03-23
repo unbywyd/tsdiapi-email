@@ -118,14 +118,14 @@ export class NodemailerProvider {
         }
     }
 }
-export async function createEmailProvider(config, logger) {
+export async function createEmailProvider(config, app) {
     if (config.provider === "nodemailer") {
-        const provider = new NodemailerProvider(config, logger);
+        const provider = new NodemailerProvider(config, app.fastify.log);
         await provider.init();
         return provider;
     }
     if (config.provider === "sendgrid") {
-        const provider = new SendgridProvider(config, logger);
+        const provider = new SendgridProvider(config, app.fastify.log);
         await provider.init();
         return provider;
     }
