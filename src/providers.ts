@@ -86,7 +86,7 @@ export class SendgridProvider implements EmailProvider {
             }
 
             const devModeEnabled = await isDevModeEnabled(this.config.devMode, this.appContext);
-            
+
             if (devModeEnabled) {
                 this.logger.info(`📧 [DEV MODE] Email would be sent:`, {
                     from: this.config.senderEmail,
@@ -95,6 +95,7 @@ export class SendgridProvider implements EmailProvider {
                     html: _html,
                     provider: 'sendgrid'
                 });
+                console.log(`👨‍🎓💭 {message: Subject:${subject} To:${to}}`);
             } else {
                 await this.sgMail.send({ from: this.config.senderEmail, to, subject, html: _html });
                 this.logger.info(`Email with subject "${subject}" sent to ${to}`);
@@ -149,7 +150,7 @@ export class NodemailerProvider implements EmailProvider {
 
             // Проверяем devMode
             const devModeEnabled = await isDevModeEnabled(this.config.devMode, this.appContext);
-            
+
             if (devModeEnabled) {
                 // В режиме разработки логируем письмо вместо отправки
                 this.logger.info(`📧 [DEV MODE] Email would be sent:`, {
@@ -159,6 +160,7 @@ export class NodemailerProvider implements EmailProvider {
                     html: _html,
                     provider: 'nodemailer'
                 });
+                console.log(`👨‍🎓💭 {message: Subject:${subject} To:${to}}`);
             } else {
                 // Отправляем письмо как обычно
                 await this.transporter.sendMail({ from: this.config.senderEmail || this.config.smtp?.auth?.user, to, subject, html: _html });
