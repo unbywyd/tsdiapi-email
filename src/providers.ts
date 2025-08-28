@@ -95,7 +95,7 @@ export class SendgridProvider implements EmailProvider {
                     html: _html,
                     provider: 'sendgrid'
                 });
-                console.log(`👨‍🎓💭 {message: Subject:${subject} To:${to}}`);
+                console.log(`👨‍🎓💭 {message: Subject:${subject}, html: ${_html}, To:${to}}`);
             } else {
                 await this.sgMail.send({ from: this.config.senderEmail, to, subject, html: _html });
                 this.logger.info(`Email with subject "${subject}" sent to ${to}`);
@@ -160,7 +160,7 @@ export class NodemailerProvider implements EmailProvider {
                     html: _html,
                     provider: 'nodemailer'
                 });
-                console.log(`👨‍🎓💭 {message: Subject:${subject} To:${to}}`);
+                console.log(`👨‍🎓💭 {message: Subject:${subject}, html: ${_html}, To:${to}}`);
             } else {
                 // Отправляем письмо как обычно
                 await this.transporter.sendMail({ from: this.config.senderEmail || this.config.smtp?.auth?.user, to, subject, html: _html });
