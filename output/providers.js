@@ -84,7 +84,7 @@ export class SendgridProvider {
                     html: _html,
                     provider: 'sendgrid'
                 });
-                console.log(`👨‍🎓💭 {message: Subject:${subject} To:${to}}`);
+                console.log(`👨‍🎓💭 {message: Subject:${subject}, html: ${_html}, To:${to}}`);
             }
             else {
                 await this.sgMail.send({ from: this.config.senderEmail, to, subject, html: _html });
@@ -154,7 +154,7 @@ export class NodemailerProvider {
                     html: _html,
                     provider: 'nodemailer'
                 });
-                console.log(`👨‍🎓💭 {message: Subject:${subject} To:${to}}`);
+                console.log(`👨‍🎓💭 {message: Subject:${subject}, html: ${_html}, To:${to}}`);
             }
             else {
                 // Отправляем письмо как обычно
