@@ -104,6 +104,18 @@
         "mask": "*"
       },
       "when": "EMAIL_PROVIDER == 'nodemailer'"
+    },
+    {
+      "name": "DEV_MODE",
+      "type": "boolean",
+      "default": false,
+      "configurable": true,
+      "description": "Development mode - log emails instead of sending them",
+      "inquirer": {
+        "message": "Enable development mode (log emails instead of sending)?",
+        "type": "confirm",
+        "default": false
+      }
     }
   ],
   "files": [

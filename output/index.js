@@ -53,6 +53,11 @@ class App {
         if (user && pass) {
             this.config.smtp.auth = { user, pass };
         }
+        // Получаем devMode из переменных окружения
+        const envDevMode = config.get("DEV_MODE", false);
+        if (this.config.devMode === undefined) {
+            this.config.devMode = envDevMode;
+        }
         if (this.config.handlebarsTemplatePath) {
             this.config.handlebarsTemplatePath = this.findTemplate(this.config.handlebarsTemplatePath);
         }

@@ -23,6 +23,7 @@ export type PluginOptions = {
     sendgridApiKey?: string,
     smtp?: Record<string, any>,
     handlebarsTemplatePath?: string,
+    devMode?: boolean | Promise<boolean> | ((ctx: AppContext) => Promise<boolean> | boolean),
     additionalTemplateData?: Record<any, any> | ((ctx: EmailUserContext<any>) => Record<any, any> | Promise<Record<any, any>>),
     context?: <T>(ctx: EmailUserContext<T>) => Promise<EmailUserContext<T>> | EmailUserContext<T>
 }
@@ -80,6 +81,12 @@ class App implements AppPlugin {
         const pass = config.get("SMTP_PASS", this.config?.smtp?.auth?.pass) as string;
         if (user && pass) {
             this.config.smtp.auth = { user, pass };
+        }
+
+        // Получаем devMode из переменных окружения
+        const envDevMode = config.get("DEV_MODE", false) as boolean;
+        if (this.config.devMode === undefined) {
+            this.config.devMode = envDevMode;
         }
 
         if (this.config.handlebarsTemplatePath) {

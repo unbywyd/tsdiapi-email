@@ -7,8 +7,9 @@ export interface EmailProvider {
 export declare class SendgridProvider implements EmailProvider {
     private config;
     logger: AppContext['fastify']['log'];
+    private appContext;
     private sgMail;
-    constructor(config: PluginOptions, logger: AppContext['fastify']['log']);
+    constructor(config: PluginOptions, logger: AppContext['fastify']['log'], appContext: AppContext);
     checkSendgridConfig(): Promise<void>;
     init(): Promise<void>;
     sendEmail(to: string | Array<string>, subject: string, html?: string, payload?: Record<any, any>): Promise<void>;
@@ -16,8 +17,9 @@ export declare class SendgridProvider implements EmailProvider {
 export declare class NodemailerProvider implements EmailProvider {
     private config;
     logger: AppContext['fastify']['log'];
+    private appContext;
     private transporter;
-    constructor(config: PluginOptions, logger: AppContext['fastify']['log']);
+    constructor(config: PluginOptions, logger: AppContext['fastify']['log'], appContext: AppContext);
     checkSmtpConfig(): Promise<void>;
     init(): Promise<void>;
     sendEmail(to: string | Array<string>, subject: string, html?: string, payload?: Record<any, any>): Promise<void>;

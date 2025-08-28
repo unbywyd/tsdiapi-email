@@ -7,6 +7,23 @@ import { AppContext } from "@tsdiapi/server";
 const loadNodemailer = () => import("nodemailer");
 const loadSendgrid = () => import("@sendgrid/mail");
 
+// Вспомогательная функция для проверки devMode
+const isDevModeEnabled = async (devMode: boolean | Promise<boolean> | ((ctx: AppContext) => Promise<boolean> | boolean) | undefined, appContext: AppContext): Promise<boolean> => {
+    if (devMode === undefined || devMode === false) {
+        return false;
+    }
+    if (devMode === true) {
+        return true;
+    }
+    if (typeof devMode === 'function') {
+        return await devMode(appContext);
+    }
+    if (devMode instanceof Promise) {
+        return await devMode;
+    }
+    return false;
+};
+
 export interface EmailProvider {
     init(): Promise<void>;
     sendEmail(to: string | Array<string>, subject: string, html?: string, payload?: Record<any, any>): Promise<void>;
@@ -36,7 +53,7 @@ const buildTemplate = async (path: string, meta: EmailUserContext<any>, addition
 export class SendgridProvider implements EmailProvider {
     private sgMail: MailService;
 
-    constructor(private config: PluginOptions, public logger: AppContext['fastify']['log']) { }
+    constructor(private config: PluginOptions, public logger: AppContext['fastify']['log'], private appContext: AppContext) { }
 
     async checkSendgridConfig() {
         if (!this.config.sendgridApiKey) {
@@ -68,8 +85,20 @@ export class SendgridProvider implements EmailProvider {
                 _html = await buildTemplate(this.config.handlebarsTemplatePath, ctx, this.config.additionalTemplateData || {});
             }
 
-            await this.sgMail.send({ from: this.config.senderEmail, to, subject, html: _html });
-            this.logger.info(`Email with subject "${subject}" sent to ${to}`);
+            const devModeEnabled = await isDevModeEnabled(this.config.devMode, this.appContext);
+            
+            if (devModeEnabled) {
+                this.logger.info(`📧 [DEV MODE] Email would be sent:`, {
+                    from: this.config.senderEmail,
+                    to: to,
+                    subject: subject,
+                    html: _html,
+                    provider: 'sendgrid'
+                });
+            } else {
+                await this.sgMail.send({ from: this.config.senderEmail, to, subject, html: _html });
+                this.logger.info(`Email with subject "${subject}" sent to ${to}`);
+            }
         } catch (error) {
             this.logger.error("Error sending email", error);
         }
@@ -78,7 +107,7 @@ export class SendgridProvider implements EmailProvider {
 
 export class NodemailerProvider implements EmailProvider {
     private transporter: Transporter<any>;
-    constructor(private config: PluginOptions, public logger: AppContext['fastify']['log']) { }
+    constructor(private config: PluginOptions, public logger: AppContext['fastify']['log'], private appContext: AppContext) { }
 
     async checkSmtpConfig() {
         if (!this.config.smtp) {
@@ -117,8 +146,24 @@ export class NodemailerProvider implements EmailProvider {
             if (this.config.handlebarsTemplatePath) {
                 _html = await buildTemplate(this.config.handlebarsTemplatePath, ctx, this.config.additionalTemplateData || {});
             }
-            await this.transporter.sendMail({ from: this.config.senderEmail || this.config.smtp?.auth?.user, to, subject, html: _html });
-            this.logger.info(`Email with subject "${subject}" sent to ${to}`);
+
+            // Проверяем devMode
+            const devModeEnabled = await isDevModeEnabled(this.config.devMode, this.appContext);
+            
+            if (devModeEnabled) {
+                // В режиме разработки логируем письмо вместо отправки
+                this.logger.info(`📧 [DEV MODE] Email would be sent:`, {
+                    from: this.config.senderEmail || this.config.smtp?.auth?.user,
+                    to: to,
+                    subject: subject,
+                    html: _html,
+                    provider: 'nodemailer'
+                });
+            } else {
+                // Отправляем письмо как обычно
+                await this.transporter.sendMail({ from: this.config.senderEmail || this.config.smtp?.auth?.user, to, subject, html: _html });
+                this.logger.info(`Email with subject "${subject}" sent to ${to}`);
+            }
         } catch (error) {
             this.logger.error("Error sending email", error);
         }
@@ -127,13 +172,13 @@ export class NodemailerProvider implements EmailProvider {
 
 export async function createEmailProvider(config: PluginOptions, app: AppContext): Promise<EmailProvider> {
     if (config.provider === "nodemailer") {
-        const provider = new NodemailerProvider(config, app.fastify.log);
+        const provider = new NodemailerProvider(config, app.fastify.log, app);
         await provider.init();
         return provider;
     }
 
     if (config.provider === "sendgrid") {
-        const provider = new SendgridProvider(config, app.fastify.log);
+        const provider = new SendgridProvider(config, app.fastify.log, app);
         await provider.init();
         return provider;
     }
