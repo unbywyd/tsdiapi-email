@@ -1,7 +1,7 @@
 {
   "name": "@tsdiapi/email",
   "description": "Email plugin for TSDIAPI-Server providing a simple and extensible way to send emails.",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "main": "output/index.js",
   "types": "output/index.d.ts",
   "type": "module",
@@ -40,7 +40,7 @@
   },
   "peerDependencies": {
     "fastify": "^5.2.1",
-    "@tsdiapi/server": "^0.2.0"
+    "@tsdiapi/server": "^0.3.0"
   },
   "repository": {
     "type": "git",
